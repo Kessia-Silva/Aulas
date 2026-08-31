@@ -1,5 +1,5 @@
 # achar o tempo médio das primitivas FOCA
-from time import time
+from time import perf_counter
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -12,12 +12,12 @@ for n in lista_n:
     tt = []
 
     for r in range(R):
-        tic = time()
+        tic = perf_counter()
 
         for i in range(n):
             x = 1
 
-        toc = time()
+        toc = perf_counter()
         tt.append(toc - tic)
 
     # ordenar os tempos
@@ -25,7 +25,7 @@ for n in lista_n:
     tt = np.sort(tt)
 
     # testar valores de corte
-    for tcorte in tt:
+    for tcorte in tt[::-1]:
         tt_filtrado = tt[tt < tcorte]
 
         if len(tt_filtrado) > 1:
