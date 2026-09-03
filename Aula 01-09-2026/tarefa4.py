@@ -13,12 +13,12 @@ for r in range(R):
     for i in range(n):
         tic = time()
         x = 1 
-        tic = time()
-        t += toc - tic
+        tac = time()
+        t += tac - tic
     TOU_A.append(t/n)
     #controle
-    media < np.mean(TAU_A)
-    sigma = np.std(TAU_A)
+    media = np.mean(TOU_A)
+    sigma = np.std(TOU_A)
     cv = sigma/media
     if cv < 0.15:
         break
