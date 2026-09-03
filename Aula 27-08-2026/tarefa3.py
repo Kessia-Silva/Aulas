@@ -30,8 +30,10 @@ for n in lista_n:
 
         if len(tt_filtrado) > 1:
             media = np.mean(tt_filtrado)
-            desvio = np.std(tt_filtrado)
+            desvio = np.std(tt_filtrado)   
             coef_variacao = desvio / media
+            print(f"Coef de variação = {coef_variacao}")
+
 
             if coef_variacao < 0.15:
                 break
