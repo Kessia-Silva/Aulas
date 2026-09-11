@@ -35,7 +35,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-N_VALUES = [100, 500, 1000, 1500, 2000, 2500, 3000]
+N_VALUES = [100, 1500, 3000]
 R = 40
 TRIALS = 3
 CV_LIMIT = 0.15
