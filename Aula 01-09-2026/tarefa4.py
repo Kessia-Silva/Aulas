@@ -20,5 +20,5 @@ for r in range(R):
     media = np.mean(TOU_A)
     sigma = np.std(TOU_A)
     cv = sigma/media
-    if cv < 0.15:
-        break
+    if len(TOU_A) >= 5 and cv < 0.15:
+      break

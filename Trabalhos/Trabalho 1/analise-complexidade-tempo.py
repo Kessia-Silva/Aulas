@@ -1,171 +1,93 @@
 from time import time
 import numpy as np
 
-# Quantidade de vezes que cada primitiva será executada
-n = 10**6
+# Valores de n que serão testados
+lista_n = [1000, 10000, 100000, 1000000]
 
-# Número máximo de experimentos
-R = 500
-
-
-# ==========================================================
-# 1. TEMPO DE CONTROLE
-# ==========================================================
-# Mede somente o custo de iniciar e terminar a medição.
-# Não existe uma primitiva entre tic e tac.
-
-T0 = []
-
-for r in range(R):
-
-    t = 0
-
-    for i in range(n):
-
-        tic = time()
-        tac = time()
-
-        t += tac - tic
-
-    T0.append(t / n)
-
-    media = np.mean(T0)
-    sigma = np.std(T0)
-
-    if sigma / media < 0.15:
-        break
-
-T0 = np.mean(T0)
+# Número de experimentos para cada n
+R = 100
 
 
 # ==========================================================
-# 2. ATRIBUIÇÃO
+# 1. ATRIBUIÇÃO
 # ==========================================================
-# Primitiva: x = 1
 
-TA = []
+print("=== ATRIBUIÇÃO ===")
 
-for r in range(R):
+for n in lista_n:
 
-    t = 0
+    tempos = []
 
-    for i in range(n):
+    for r in range(R):
 
         tic = time()
 
-        x = 1
+        for i in range(n):
+            x = 1
 
         tac = time()
 
-        t += tac - tic
+        tempos.append(tac - tic)
 
-    TA.append(t / n)
+    media = np.mean(tempos)
 
-    media = np.mean(TA)
-    sigma = np.std(TA)
-
-    if sigma / media < 0.15:
-        break
-
-TA = np.mean(TA)
-
-# Tempo da atribuição:
-tau_a = TA - T0
+    print(f"n = {n}")
+    print(f"Tempo médio = {media} segundos")
+    print()
 
 
 # ==========================================================
-# 3. COMPARAÇÃO
+# 2. COMPARAÇÃO
 # ==========================================================
-# Primitiva: x < n
 
-TC = []
+print("=== COMPARAÇÃO ===")
 
-for r in range(R):
+for n in lista_n:
 
-    t = 0
+    tempos = []
     x = 0
 
-    for i in range(n):
+    for r in range(R):
 
         tic = time()
 
-        x < n
+        for i in range(n):
+            x < n
 
         tac = time()
 
-        t += tac - tic
+        tempos.append(tac - tic)
 
-    TC.append(t / n)
+    media = np.mean(tempos)
 
-    media = np.mean(TC)
-    sigma = np.std(TC)
-
-    if sigma / media < 0.15:
-        break
-
-TC = np.mean(TC)
-
-# Tempo da comparação:
-tau_c = TC - T0
+    print(f"n = {n}")
+    print(f"Tempo médio = {media} segundos")
+    print()
 
 
 # ==========================================================
-# 4. OPERAÇÃO
+# 3. OPERAÇÃO
 # ==========================================================
-# Primitiva: x + 1
 
-TO = []
+print("=== OPERAÇÃO ===")
 
-for r in range(R):
+for n in lista_n:
 
-    t = 0
-    x = 0
+    tempos = []
 
-    for i in range(n):
+    for r in range(R):
 
         tic = time()
 
-        x + 1
+        for i in range(n):
+            x + 1
 
         tac = time()
 
-        t += tac - tic
+        tempos.append(tac - tic)
 
-    TO.append(t / n)
+    media = np.mean(tempos)
 
-    media = np.mean(TO)
-    sigma = np.std(TO)
-
-    if sigma / media < 0.15:
-        break
-
-TO = np.mean(TO)
-
-# Tempo da operação:
-tau_o = TO - T0
-
-
-# ==========================================================
-# RESULTADOS
-# ==========================================================
-
-print("T0 =", T0, "segundos")
-
-print()
-print("τo =", tau_o, "segundos/operação")
-print("τc =", tau_c, "segundos/comparação")
-print("τa =", tau_a, "segundos/atribuição")
-
-
-# ==========================================================
-# BENCHMARK
-# ==========================================================
-# Se T está em segundos/primitiva,
-# 1/T dá primitivas/segundo.
-
-print()
-print("Benchmark:")
-
-print("1/τo =", 1 / tau_o, "operações/segundo")
-print("1/τc =", 1 / tau_c, "comparações/segundo")
-print("1/τa =", 1 / tau_a, "atribuições/segundo")
+    print(f"n = {n}")
+    print(f"Tempo médio = {media} segundos")
+    print()

@@ -1,0 +1,14 @@
+{
+  "N_VALUES": [
+    100,
+    1500,
+    3000
+  ],
+  "R": 40,
+  "TRIALS": 3,
+  "K_BATCH": 400,
+  "CV_LIMIT": 0.15,
+  "aprovado": true,
+  "cv_maximo_observado": 0.08838447124669113,
+  "casos_reprovados": []
+}

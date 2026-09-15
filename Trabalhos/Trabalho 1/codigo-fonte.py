@@ -1,11 +1,10 @@
-import numpy as np
+n = 1000000
 
-n = 100000
-valores = np.arange(n)
+# Atribuição
+x = 1
 
-soma = 0
+# Comparação
+x < n
 
-for i in range(n):
-    soma = soma + valores[i]
-
-print(soma)
+# Operação
+x + 1
