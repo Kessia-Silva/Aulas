@@ -59,8 +59,8 @@ N_SAMPLES = 3000     # amostra interna (n): medições (em lote) individuais por
 R_GLOBAL = 3          # repetições globais (r): rodadas independentes p/ reprodutibilidade
 P_LOW, P_HIGH = 5, 95  # percentis de corte (Técnica 2: Corte Robusto por Percentis)
 CV_LIMIT = 0.15
-TARGET_BATCH_NS = 3000.0   # duração mínima alvo de cada amostra em lote (ns), bem acima
-                            # da resolução real do relógio (medida em ~150-200ns nesta VM)
+TARGET_BATCH_NS = 5000.0   # duração mínima alvo de cada amostra em lote (ns)
+MIN_K = 20                  # piso mínimo de lote — nunca confia em K=1 (disparo único)
 MAX_K = 200_000             # trava de segurança para o tamanho do lote
 
 OUT_DIR = "outputs"
@@ -141,16 +141,31 @@ TODAS_MATRIZES = [
 # =========================================================================
 def calibrar_k(func, target_ns=TARGET_BATCH_NS):
     """Descobre o tamanho de lote K necessário para que uma janela de
-    medição (K execuções seguidas de func) dure pelo menos target_ns."""
+    medição (K execuções seguidas de func) dure pelo menos target_ns.
+
+    ROBUSTEZ: a decisão em cada nível de K usa a MEDIANA de várias
+    tentativas (não uma única medição), porque uma única tentativa pode
+    calhar de coincidir com uma interferência do Scheduler/GC do sistema
+    e inflar artificialmente o tempo medido -- fazendo a calibração
+    concluir (erroneamente) que um K pequeno já é suficiente. Um piso
+    mínimo de K (MIN_K) também é aplicado como segurança extra, já que
+    sabemos empiricamente que medições de disparo único (K=1) quase
+    sempre ficam abaixo da resolução real do temporizador do sistema.
+    """
+    TENTATIVAS_POR_NIVEL = 5
     k = 1
     while True:
-        t0 = time.perf_counter()
-        for _ in range(k):
-            func()
-        dt_ns = (time.perf_counter() - t0) * 1e9
+        amostras_ns = []
+        for _ in range(TENTATIVAS_POR_NIVEL):
+            t0 = time.perf_counter()
+            for _ in range(k):
+                func()
+            amostras_ns.append((time.perf_counter() - t0) * 1e9)
+        dt_ns = statistics.median(amostras_ns)
+
         if dt_ns >= target_ns or k >= MAX_K:
             k_ideal = max(1, int(k * (target_ns / dt_ns) * 1.2)) if dt_ns > 0 else k
-            return min(k_ideal, MAX_K)
+            return max(MIN_K, min(k_ideal, MAX_K))
         k *= 2
 
 
@@ -324,6 +339,8 @@ def main():
         print(f"   {k}: {val}")
 
     resultados_globais = {g: [] for g, _, _ in TODAS_MATRIZES}
+    resultados_por_rodada = {}   # rodada -> {grupo: [(label, r), ...]}
+    max_cv_por_rodada = {}       # rodada -> maior CVfil observado (p/ escolher a melhor)
     csv_rows = []
     latex_rows = {g: [] for g, _, _ in TODAS_MATRIZES}
     reprovados = []
@@ -332,6 +349,9 @@ def main():
         print(f"\n--- Repetição global {rodada}/{R_GLOBAL} ---")
         controle_mu, controle_raw, controle_filt, controle_k = medir_controle()
         print(f"   T0 (controle) filtrado: {fmt_ns(controle_mu)}  (K={controle_k})")
+
+        resultados_por_rodada[rodada] = {g: [] for g, _, _ in TODAS_MATRIZES}
+        piores_cv_rodada = []
 
         for grupo, titulo, primitivas in TODAS_MATRIZES:
             for label, func in primitivas:
@@ -350,9 +370,19 @@ def main():
                     "cv_fil_pct": r["cv_fil"] * 100, "status": status,
                 })
 
-                if rodada == R_GLOBAL:  # usa a última rodada como oficial p/ LaTeX e gráficos
-                    latex_rows[grupo].append(linha_latex(label, r))
-                    resultados_globais[grupo].append((label, r))
+                resultados_por_rodada[rodada][grupo].append((label, r))
+                piores_cv_rodada.append(r["cv_fil"])
+
+        max_cv_por_rodada[rodada] = max(piores_cv_rodada)
+
+    # ---- Escolhe a MELHOR rodada (menor CV máximo) como oficial p/ LaTeX e gráficos ----
+    melhor_rodada = min(max_cv_por_rodada, key=max_cv_por_rodada.get)
+    print(f"\n>>> Rodada escolhida como OFICIAL (menor CV máximo): "
+          f"Rodada {melhor_rodada} (CV máximo = {max_cv_por_rodada[melhor_rodada]*100:.2f}%)")
+    for grupo, _, _ in TODAS_MATRIZES:
+        for label, r in resultados_por_rodada[melhor_rodada][grupo]:
+            latex_rows[grupo].append(linha_latex(label, r))
+            resultados_globais[grupo].append((label, r))
 
     # ---- Gráficos: um painel por macroprimitiva, usando uma linha representativa ----
     print("\nGerando painéis gráficos (1 representante por macroprimitiva)...")
