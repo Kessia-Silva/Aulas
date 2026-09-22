@@ -1,0 +1,10 @@
+{
+  "sistema_operacional": "Windows 11 (10.0.26200)",
+  "linguagem": "Python 3.13.7 (CPython)",
+  "arquitetura": "AMD64",
+  "processador_platform": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+  "cpu_modelo": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+  "cpu_nucleos_logicos": 12,
+  "cpu_freq_atual_mhz": "N/D (rode 'wmic cpu get MaxClockSpeed' no Windows)",
+  "ram_total_gb": "N/D"
+}

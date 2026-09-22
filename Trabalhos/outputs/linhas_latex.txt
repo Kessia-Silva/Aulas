@@ -1,0 +1,33 @@
+
+% ===== Custo de Atribuições (tau_a) =====
+var int <- cte int (a = 5) & 269.10 ns & 49.49 ns & 18.39\% & 113.29 ns & 46.67 ns & 41.19\% \\
+var float <- cte float & 62.72 ns & 25.67 ns & 40.93\% & -94.39 ns & 5.05 ns & inf\% \\
+var bool <- cte bool & 254.17 ns & 498.78 ns & 196.24\% & 73.24 ns & 67.97 ns & 92.81\% \\
+var int <- var int (a = b) & 473.77 ns & 2982.67 ns & 629.57\% & 154.94 ns & 57.52 ns & 37.13\% \\
+var float <- var float & 213.13 ns & 272.57 ns & 127.89\% & 53.24 ns & 53.91 ns & 101.27\% \\
+
+% ===== Custo de Comparações (tau_c) =====
+Igualdade: cte int == cte int & 48.14 ns & 29.33 ns & 60.93\% & -109.11 ns & 8.67 ns & inf\% \\
+Igualdade: var int == cte int & 288.00 ns & 790.69 ns & 274.55\% & 103.07 ns & 73.59 ns & 71.40\% \\
+Igualdade: var int == var int & 73.47 ns & 256.39 ns & 348.99\% & -93.03 ns & 8.01 ns & inf\% \\
+Igualdade: var float == var float & 199.43 ns & 72.33 ns & 36.27\% & 44.46 ns & 58.47 ns & 131.51\% \\
+Desigualdade: var int != var int & 51.58 ns & 110.53 ns & 214.30\% & -107.34 ns & 9.14 ns & inf\% \\
+Relacional: var int > var int & 65.17 ns & 50.95 ns & 78.18\% & -92.80 ns & 6.87 ns & inf\% \\
+Relacional: var float < cte float & 54.00 ns & 79.21 ns & 146.68\% & -105.98 ns & 10.09 ns & inf\% \\
+
+% ===== Custo de Operações Matemáticas (tau_o) =====
+Soma Int: var int + cte int & 44.61 ns & 88.66 ns & 198.76\% & -114.40 ns & 5.63 ns & inf\% \\
+Soma Int: var int + var int & 60.95 ns & 131.94 ns & 216.48\% & -103.10 ns & 10.96 ns & inf\% \\
+Soma Float: var float + var float & 45.88 ns & 21.61 ns & 47.12\% & -110.69 ns & 6.31 ns & inf\% \\
+Subtração Int: var int - var int & 49.16 ns & 130.40 ns & 265.24\% & -110.41 ns & 3.71 ns & inf\% \\
+Multiplicação Int: var int * var int & 52.41 ns & 16.71 ns & 31.89\% & -102.98 ns & 13.48 ns & inf\% \\
+Multiplicação Float: var float * var float & 67.32 ns & 122.28 ns & 181.65\% & -92.17 ns & 12.36 ns & inf\% \\
+Divisão Float: var float / var float & 54.83 ns & 42.14 ns & 76.86\% & -104.41 ns & 11.19 ns & inf\% \\
+Divisão Int (Piso): var int // var int & 217.93 ns & 467.36 ns & 214.45\% & 46.91 ns & 63.47 ns & 135.29\% \\
+Módulo (Resto): var int % var int & 64.57 ns & 70.41 ns & 109.05\% & -97.13 ns & 12.51 ns & inf\% \\
+
+% ===== Custo de Funções Opacas (bônus) (F) =====
+math.sqrt(var float) & 247.87 ns & 801.66 ns & 323.42\% & 57.05 ns & 51.92 ns & 91.01\% \\
+abs(var int) & 88.62 ns & 59.47 ns & 67.11\% & -72.17 ns & 21.07 ns & inf\% \\
+len(lista_apoio) & 54.59 ns & 60.74 ns & 111.27\% & -104.73 ns & 10.91 ns & inf\% \\
+round(var float, 2) & 513.57 ns & 494.99 ns & 96.38\% & 316.96 ns & 133.57 ns & 42.14\% \\
